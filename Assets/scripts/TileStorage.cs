@@ -85,7 +85,7 @@ public class TilemapStorage
 
         foreach (Vector3Int t in tiles)
         {
-            var (isEmptyPlace, isOutOfRange) = IsEmpty(t, null);
+            var (isEmptyPlace, isOutOfRange) = IsEmpty(t);
 
             if (isEmptyPlace)
             {
@@ -97,7 +97,7 @@ public class TilemapStorage
         return res;
     }
 
-    public List<Vector3Int> GetSurroundingNoneEmptyTiles(Vector3Int center, int radius, Tilemap tm)
+    public List<Vector3Int> GetSurroundingNoneEmptyTiles(Vector3Int center, int radius)
     {
 
         Vector3Int[] tiles = TilemapUtility.FindRing(center, radius);
@@ -106,7 +106,7 @@ public class TilemapStorage
 
         foreach (Vector3Int t in tiles)
         {
-            var (isEmptyPlace, isOutOfRange) = IsEmpty(t, tm);
+            var (isEmptyPlace, isOutOfRange) = IsEmpty(t);
 
             if (!isEmptyPlace)
             {
@@ -136,9 +136,9 @@ public class TilemapStorage
         return true;
     }
 
-    public List<TileInfo> GetSurronudingTilePieces(Vector3Int center, int radius, Tilemap tm)
+    public List<TileInfo> GetSurronudingTilePieces(Vector3Int center, int radius)
     {
-        var list = GetSurroundingNoneEmptyTiles(center, radius, tm);
+        var list = GetSurroundingNoneEmptyTiles(center, radius);
 
         if(list.Count == 0)
         {
@@ -173,7 +173,7 @@ public class TilemapStorage
 
             foreach (Vector3Int t in rTiles)
             {
-                var (isEmptyPlace, isOutOfRange) = IsEmpty(t, tm);
+                var (isEmptyPlace, isOutOfRange) = IsEmpty(t);
 
                 if (isOutOfRange)
                 {
@@ -216,7 +216,7 @@ public class TilemapStorage
     //}
 
     // isEmptyPlace, isOutOfRange
-    private (Boolean, Boolean) IsEmpty(Vector3Int position, Tilemap tm)
+    private (Boolean, Boolean) IsEmpty(Vector3Int position)
     {
         //if (cellBounds.xMin > position.x || cellBounds.yMin > position.y || cellBounds.zMin > position.z || cellBounds.xMax < position.x || cellBounds.yMax < position.y || cellBounds.zMax < position.z)
         //{

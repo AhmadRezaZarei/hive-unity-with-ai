@@ -13,4 +13,8 @@ public class GameState
 
     public bool isUser2QueenEntered = false;
 
+    public int totalTrurnsSinceStart = 0;
+
+    public int totalPiecesInGame;
+
 }
