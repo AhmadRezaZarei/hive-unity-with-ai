@@ -5,6 +5,8 @@ using UnityEngine.Tilemaps;
 
 public class TilemapStorage
 {
+    
+    public delegate void Iterator(Vector3Int position, TileInfo ti, int hIndex);
 
     private Dictionary<String, List<TileInfo>> tiles;
 
@@ -14,6 +16,21 @@ public class TilemapStorage
         this.cellBounds = cellBounds;
         tiles = new Dictionary<String, List<TileInfo>>();
     }
+
+    public void ForEeachTiles(Iterator iterator)
+    {
+        foreach(KeyValuePair<String, List<TileInfo>> entry in tiles) {
+
+            Vector3Int tilePosition = entry.Key.toVector3Int();
+
+            for(int i = 0; i < entry.Value.Count; i++)
+            {
+                iterator(tilePosition, entry.Value[i], i);
+            }
+
+        }
+    }
+
 
     public TilemapStorage()
     {
