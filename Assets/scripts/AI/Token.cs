@@ -12,7 +12,7 @@ public class Token: IComparable<Token>
     public bool isInTheBoard;
     public int userId;
     
-    public Vector3Int getPositionInTilemap()
+    public Vector3Int GetPositionInTilemap()
     {
         return new Vector3Int(x, y, 0);
     }

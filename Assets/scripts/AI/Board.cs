@@ -1,20 +1,16 @@
 using System.Collections.Generic;
 using System;
+using UnityEngine;
 public class Board 
 {
     Token[] tokens;
-    int user1Turns;
-    int user2Turns;
-    bool isUser1QueenEntered;
-    bool isUser2QueenEntered;
+    GameState gameState;
+    MoveManager moveManager;
 
-    public Board(Token[] tokens, int user1Turns, int user2Turns, bool isUser1QueenEntered, bool isUser2QueenEntered)
+    public Board(Token[] tokens, GameState gameState, MoveManager moveManager)
     {
         this.tokens = tokens;
-        this.user1Turns = user1Turns;
-        this.user2Turns = user2Turns;
-        this.isUser1QueenEntered = isUser1QueenEntered;
-        this.isUser2QueenEntered = isUser2QueenEntered;
+        this.gameState = gameState;
     }
 
 
@@ -32,7 +28,7 @@ public class Board
                 continue;
             }
 
-            ts.Insert(token.getPositionInTilemap(), token.getCorespondingTileInfo());
+            ts.Insert(token.GetPositionInTilemap(), token.getCorespondingTileInfo());
         }
 
         return ts;
@@ -41,14 +37,55 @@ public class Board
     public List<Move> getPossibleMoves(int userId)
     {
 
-        foreach(Token token in tokens)
+        List<Move> moves = new List<Move>();
+
+
+        // this array cotains openning moves and avoids two openning moves with same insect type
+        List<InsectType> openningMoves = new List<InsectType>();
+
+        bool isQueenEntered = userId == 0 ? gameState.isUser1QueenEntered : gameState.isUser2QueenEntered;
+
+        foreach (Token token in tokens)
         {
 
+            // token belongs to openent 
             if(token.userId != userId)
             {
                 continue;
             }
 
+
+            // queen has not entered the game and current_token is in the game;
+            if(token.isInTheBoard && !isQueenEntered)
+            {
+                continue;
+            }
+
+
+            // token is not movable
+            if (!moveManager.isMovable(token.GetPositionInTilemap(), token.type == InsectType.Beetle, token.tokenId)) {
+                continue;
+            }
+
+
+            switch(token.type)
+            {
+                case InsectType.Ant:
+                    break;
+                case InsectType.Beetle:
+                    break;
+                case InsectType.Grasshopper:
+                    break;
+                case InsectType.Queen:
+                    break;
+                case InsectType.Spider:
+                    break;
+                default:
+                    break;
+
+            }
+
+            
 
 
         }

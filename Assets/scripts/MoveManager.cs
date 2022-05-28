@@ -58,8 +58,15 @@ public class MoveManager
         return res;
     }
 
+    public List<Vector3Int> GetAntCandidateDestinations(Vector3Int antPosition)
+    {
 
-    public List<Vector3Int> GetSpiderCandidatePositions(Vector3Int spiderPosition)
+        return null;
+    }
+
+   
+
+    public List<Vector3Int> GetSpiderCandidateDestinations(Vector3Int spiderPosition)
     {
 
         var list = DepthLimitedDistinitions(spiderPosition, spiderPosition, new HashSet<string>(), new HashSet<string>(), 0);
@@ -72,7 +79,9 @@ public class MoveManager
 
 
 
-    public bool isMovable(Vector3Int initialPosition, bool isBeetle)
+
+
+    public bool isMovable(Vector3Int initialPosition, bool isBeetle, int tokenId)
     {
         HashSet<int> visited = new HashSet<int>();
 
@@ -87,7 +96,9 @@ public class MoveManager
 
         if (isBeetle)
         {
-            if (tilemapStorage.GetPieces(initialPosition).Count > 1)
+            List<TileInfo> pices = tilemapStorage.GetPieces(initialPosition);
+
+            if (pices.Count > 1 && pices[pices.Count - 1].tokenId == tokenId)
             {
                 return true;
             }
@@ -301,15 +312,10 @@ public class MoveManager
             return isValidForOpenningMove(type, userId, destinationPosition);
         }
 
-
-
-
-        if (!isMovable(initialPosition, type == InsectType.Beetle) && !isOpenningMove)
+        if (!isMovable(initialPosition, type == InsectType.Beetle, tokenId) && !isOpenningMove)
         {
             return false;
         }
-
-
 
         if (type == InsectType.Ant && !isOpenningMove)
         {
@@ -317,11 +323,10 @@ public class MoveManager
         }
 
 
-
         if (type == InsectType.Spider && !isOpenningMove)
         {
 
-            var candidatePositions = GetSpiderCandidatePositions(initialPosition);
+            var candidatePositions = GetSpiderCandidateDestinations(initialPosition);
 
             return ContainsItem(candidatePositions, destinationPosition);
 
@@ -356,6 +361,8 @@ public class MoveManager
 
         return false;
     }
+
+    
 
 
 
@@ -451,6 +458,7 @@ public class MoveManager
         return res;
     }
 
+
     private bool hasNoneEmptyNeighboar(Vector3Int position, Vector3Int except)
     {
 
@@ -472,7 +480,6 @@ public class MoveManager
         }
 
         return true;
-
 
     }
 
