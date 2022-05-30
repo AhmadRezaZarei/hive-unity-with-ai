@@ -42,7 +42,7 @@ public class Board
     // handle moves
     public List<Move> getPossibleMoves(int userId)
     {
-
+        Debug.Log("Board:=> board size is ");
         List<Move> totalMoves = new List<Move>();
 
         // this array cotains openning moves and avoids two openning moves with same insect type
@@ -85,17 +85,20 @@ public class Board
 
             }
 
+            bool isMovable = moveManager.isMovable(token.GetPositionInTilemap(), token.type == InsectType.Beetle, token.tokenId);
+            
+            if(!isOpenningMove )
+            {
+                Debug.Log("Board:=> token-id, isMovable:=> " + token.tokenId + "  " + isMovable);
+            }
+
             // token is not movable
-            if (!isOpenningMove && !moveManager.isMovable(token.GetPositionInTilemap(), token.type == InsectType.Beetle, token.tokenId)) {
+            if (!isOpenningMove && !isMovable) {
                 continue;
             }
 
             Vector3Int tokenPosition = token.GetPositionInTilemap();
 
-           
-
-            
-           
             if(!isOpenningMove)
             {
                 switch (token.type)

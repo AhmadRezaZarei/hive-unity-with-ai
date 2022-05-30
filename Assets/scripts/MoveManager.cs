@@ -67,7 +67,6 @@ public class MoveManager
 
         tilemapStorage.ForEeachTiles((position, tileInfo, hIndex) => { 
 
-
             if(isFirstMove)
             {
                 Vector3Int[] candidatesArray =  TilemapUtility.FindRing(position, 1);
@@ -155,7 +154,6 @@ public class MoveManager
         HashSet<int> visited = new HashSet<int>();
 
         List<Vector3Int> neighbors = tilemapStorage.GetSurroundingNoneEmptyTiles(initialPosition, 1);
-
         if (neighbors.Count == 0)
         {
             return false;
@@ -173,7 +171,7 @@ public class MoveManager
             }
         }
 
-        movableHelperDFS(neighbors[0], exceptPosition, visited);
+        MovableHelperDFS(neighbors[0], exceptPosition, visited);
 
 
         if (visited.Count != gameState.totalPiecesInGame - 1)
@@ -185,7 +183,7 @@ public class MoveManager
         return true;
     }
 
-    private void movableHelperDFS(Vector3Int center, Vector3Int except, HashSet<int> visited)
+    private void MovableHelperDFS(Vector3Int center, Vector3Int except, HashSet<int> visited)
     {
 
         var pieces = tilemapStorage.GetPieces(center);
@@ -197,8 +195,6 @@ public class MoveManager
                 visited.Add(p.tokenId);
             }
         }
-
-
 
         List<Vector3Int> neighbors = tilemapStorage.GetSurroundingNoneEmptyTiles(center, 1);
 
@@ -222,13 +218,11 @@ public class MoveManager
                             visited.Add(p.tokenId);
                         }
 
-
-
                     }
 
                     if (!isVisitedAll)
                     {
-                        movableHelperDFS(v, except, visited);
+                        MovableHelperDFS(v, except, visited);
                     }
                 }
 
@@ -299,39 +293,52 @@ public class MoveManager
     {
 
 
+        Debug.Log("# # # # #");
+        Debug.Log("MoveManager:=> line 297");
+
         if (!isOpenningMove)
         {
+
+            Debug.Log("MoveManager:=> line 302");
+
             // this tells us the token is under the beetle or not
             if (!tilemapStorage.canMove(initialPosition, tokenId))
             {
+                Debug.Log("MoveManager:=> line 307");
                 return false;
             }
+            Debug.Log("MoveManager:=> line 310");
+
         }
 
-
-
+        Debug.Log("MoveManager:=> line 315");
 
         int leftTurnsToEnterQueen = userId == 0 ? gameState.leftTurnsToEnterUsers1Queen : gameState.leftTurnsToEnterUsers2Queen;
         bool isQueenEntered = userId == 0 ? gameState.isUser1QueenEntered : gameState.isUser2QueenEntered;
 
+        Debug.Log("MoveManager:=> line 319");
 
         if (!isQueenEntered && !isOpenningMove)
         {
+            Debug.Log("MoveManager:=> line 323");
             return false;
         }
 
 
+        Debug.Log("MoveManager:=> line 328");
 
         if (leftTurnsToEnterQueen == 1 && !isQueenEntered && type != InsectType.Queen)
         {
+            Debug.Log("MoveManager:=> line 332");
             return false;
         }
 
 
 
-        
 
 
+
+        Debug.Log("MoveManager:=> line 341");
 
         if (gameState.totalTrurnsSinceStart == 0)
         {
@@ -340,9 +347,13 @@ public class MoveManager
 
 
 
-        if (gameState.totalTrurnsSinceStart == 1)
+        Debug.Log("MoveManager:=> line 350");
 
+        if (gameState.totalTrurnsSinceStart == 1)
         {
+
+            Debug.Log("MoveManager:=> line 355");
+
             var neighoars = tilemapStorage.GetSurronudingTilePieces(destinationPosition, 1);
 
             if (neighoars.Count == 0)
@@ -351,6 +362,7 @@ public class MoveManager
             }
 
 
+            Debug.Log("MoveManager:=> line 365");
 
             if (neighoars[0].userId == userId)
             {
@@ -358,25 +370,37 @@ public class MoveManager
             }
 
 
+            Debug.Log("MoveManager:=> line 373");
 
             return true;
         }
+
+
+        Debug.Log("MoveManager:=> line 379");
 
         if (isOpenningMove)
         {
             return isValidForOpenningMove(type, userId, destinationPosition);
         }
 
+
+        Debug.Log("MoveManager:=> line 387");
+
         if (!isMovable(initialPosition, type == InsectType.Beetle, tokenId) && !isOpenningMove)
         {
             return false;
         }
+
+
+        Debug.Log("MoveManager:=> line 395");
 
         if (type == InsectType.Ant && !isOpenningMove)
         {
             return IsValidMoveForAnt(destinationPosition, tokenId);
         }
 
+
+        Debug.Log("MoveManager:=> line 403");
 
         if (type == InsectType.Spider && !isOpenningMove)
         {
@@ -389,6 +413,8 @@ public class MoveManager
 
 
 
+        Debug.Log("MoveManager:=> line 416");
+
         if (type == InsectType.Grasshopper && !isOpenningMove)
         {
             var candidatePositions = GetGrasshopperCandidateDestinations(initialPosition);
@@ -398,6 +424,8 @@ public class MoveManager
 
 
 
+        Debug.Log("MoveManager:=> line 427");
+
         if (type == InsectType.Queen && !isOpenningMove)
         {
             var candidatePositions = GetQueenCandidateDestinations(initialPosition);
@@ -406,19 +434,32 @@ public class MoveManager
         }
 
 
+
+        Debug.Log("MoveManager:=> line 438");
+
         if (type == InsectType.Beetle && !isOpenningMove)
         {
             var candidatePositions = GetBeetleDestinations(initialPosition);
 
             return ContainsItem(candidatePositions, destinationPosition);
 
+            Debug.Log("MoveManager:=> line 446");
         }
+
+
+        Debug.Log("MoveManager:=> line 450");
 
         return false;
     }
 
     public bool isValidForOpenningMove(InsectType type, int userId, Vector3Int tilemapPosition)
     {
+
+     
+        if(type != InsectType.Beetle && tilemapStorage.isEmptyTile(tilemapPosition))
+        {
+            return false;
+        }
 
         var neighboars = tilemapStorage.GetSurronudingTilePieces(tilemapPosition, 1);
 
@@ -490,11 +531,11 @@ public class MoveManager
 
     public List<Vector3Int> GetQueenCandidateDestinations(Vector3Int queenPosition)
     {
-        var temp = tilemapStorage.GetSurroundingEmptyTiles(queenPosition, 1);
+        List<Vector3Int> surroundingEmptyTiles = tilemapStorage.GetSurroundingEmptyTiles(queenPosition, 1);
 
         var res = new List<Vector3Int>();
 
-        foreach (var v in temp)
+        foreach (var v in surroundingEmptyTiles)
         {
             if (!hasNoneEmptyNeighboar(v, queenPosition))
             {

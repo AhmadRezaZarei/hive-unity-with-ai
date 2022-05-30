@@ -51,21 +51,26 @@ public class Piece : MonoBehaviour
         transform.position = newPosition;
     }
 
+    public void updateState(Vector3 position, bool isValidMove)
+    {
+        transform.position = position;
+
+        if (isValidMove && !isAttachedToBoard)
+        {
+            isAttachedToBoard = isValidMove;
+        }
+    }
+
+    
 
     private void OnMouseUp()
     {
         
         Vector3 currentPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition) - offset; 
         
-        var inf = gamemanager.GetAcurratePositionOnTilemap(type, userId, initialPosition, currentPosition, isAttachedToBoard, tokenId, false);
+        var (position, isValidMove) = gamemanager.GetAcurratePositionOnTilemap(type, userId, initialPosition, currentPosition, isAttachedToBoard, tokenId, false);
 
-        transform.position = inf.Item1;
-
-        if(inf.Item2 && !isAttachedToBoard)
-        {
-            isAttachedToBoard = inf.Item2;
-        }
-
+        updateState(position, isValidMove);
     }
 
 

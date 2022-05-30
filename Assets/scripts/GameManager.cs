@@ -235,7 +235,7 @@ public class GameManager : MonoBehaviour
 
             if (!isAgentMove)
             {
-                handleAgent();
+                // handleAgent();
             }
 
             return (temp, true);
@@ -263,11 +263,13 @@ public class GameManager : MonoBehaviour
 
         Move mv = agent.getRandomMove();
 
-
-        
         StartCoroutine(SmoothLerp(tilemap.CellToWorld(mv.from), tilemap.CellToWorld(mv.to), pieces[mv.token.tokenId], 4f, () => {
-            GetAcurratePositionOnTilemap(mv.token.type, mv.token.userId, tilemap.CellToWorld(mv.from), tilemap.CellToWorld(mv.to), !mv.isOpenningMove, mv.token.tokenId, true);
-            Debug.Log("called line 247");
+            var (descTos, isValid) = GetAcurratePositionOnTilemap(mv.token.type, mv.token.userId, tilemap.CellToWorld(mv.from), tilemap.CellToWorld(mv.to), !mv.isOpenningMove, mv.token.tokenId, true);
+            if(!isValid)
+            {
+                Debug.Log("GameManager:=> move is not valid for AI");
+            }
+            pieces[mv.token.tokenId].GetComponent<Piece>().updateState(descTos, isValid);
         }));
 
     }
