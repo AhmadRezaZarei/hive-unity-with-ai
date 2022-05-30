@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
+using UnityEngine.Events;
+using System;
 public class GameManager : MonoBehaviour
 {
 
@@ -37,7 +39,7 @@ public class GameManager : MonoBehaviour
     private void temp_hint(List<Vector3Int> list)
     {
 
-        if(true)
+        if(!isDebug)
         {
             return;
         }
@@ -46,13 +48,14 @@ public class GameManager : MonoBehaviour
         {
             var pos = tilemap.CellToWorld(l);
 
-            Object.Instantiate(hintCircle, pos, Quaternion.identity);
-
+            var obj = Instantiate(hintCircle, pos, Quaternion.identity);
+            Destroy(obj, 5);
         }
     }
 
     private void UpdateHintText()
     {
+        Debug.Log("UpdateHintText called");
         if(gameState.currentUserTurnId == 0)
         {
             hintText.text = "Black player turn";
@@ -74,19 +77,81 @@ public class GameManager : MonoBehaviour
         UpdateHintText();
     }
 
-    private void OnMouseDown()
+    [SerializeField]
+    private UnityEvent temp_event;
+
+    [SerializeField]
+    private int temp_token_id = 0;
+    [SerializeField]
+    private InsectType temp_token_type;
+    [SerializeField]
+    private bool isDebug = false;
+
+    
+
+    public void OnMouseDown()
     {
 
-        var pos = Input.mousePosition;
+        Debug.Log("OnMouseDown called");
+        if(!isDebug)
+        {
+            return;
+        }
 
-        var tile_pos = tilemap.WorldToCell(pos);
+        Vector3Int tokenWorldPosition = tilemap.WorldToCell(pieces[temp_token_id].transform.position);
+
+        List<Vector3Int> moves = new List<Vector3Int>();
+        switch(temp_token_type)
+        {
+            case InsectType.Ant:
+
+                moves = moveManager.GetAntCandidateDestinations(tokenWorldPosition, temp_token_id);
+
+                break;
+            case InsectType.Beetle:
+
+                moves = moveManager.GetBeetleDestinations(tokenWorldPosition);
+
+                break;
+            case InsectType.Grasshopper:
+                moves = moveManager.GetGrasshopperCandidateDestinations(tokenWorldPosition);
+
+                break;
+            case InsectType.Queen:
+                moves = moveManager.GetQueenCandidateDestinations(tokenWorldPosition);
+                break;
+            case InsectType.Spider:
+                moves = moveManager.GetSpiderCandidateDestinations(tokenWorldPosition);
+                break;
+        }
+
+        temp_hint(moves);
+
+
+
+
 
     }
 
-    
+
     // acurate_position, is_valid_position
 
-    public (Vector3, bool) GetAcurratePositionOnTilemap(InsectType type, int userId, Vector3 initialPosition, Vector3 currentPosition, bool isAttachedToBoard, int tokenId)
+
+    private IEnumerator SmoothLerp(Vector3 intialPos, Vector3 destinationPos, GameObject token,float time, Action onEnd)
+    {
+        float elapsedTime = 0;
+
+        while (elapsedTime < time)
+        {
+            token.transform.position = Vector3.Lerp(intialPos, destinationPos, (elapsedTime / time));
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        onEnd();
+    }
+
+    public (Vector3, bool) GetAcurratePositionOnTilemap(InsectType type, int userId, Vector3 initialPosition, Vector3 currentPosition, bool isAttachedToBoard, int tokenId, bool isAgentMove)
     {
 
         if(gameState.currentUserTurnId != userId)
@@ -97,35 +162,39 @@ public class GameManager : MonoBehaviour
         Vector3Int tilemapPosition = tilemap.WorldToCell(currentPosition);
 
         Vector3Int initalPositionOnTilemap = tilemap.WorldToCell(initialPosition);
-
-        if(moveManager.isValidPosition(type, userId, tilemapPosition, !isAttachedToBoard, tokenId, initalPositionOnTilemap))
+        Debug.Log("line 165");
+        if (moveManager.isValidPosition(type, userId, tilemapPosition, !isAttachedToBoard, tokenId, initalPositionOnTilemap))
         {
             Vector3 temp = tilemap.CellToWorld(tilemapPosition);
             temp.z = initialPosition.z;
 
-            if(userId == 0)
+            if (userId == 0)
             {
+                Debug.Log("User turn changed to white");
                 gameState.currentUserTurnId = 1;
                 gameState.leftTurnsToEnterUsers1Queen -= 1;
 
             } else
             {
+
+                Debug.Log("User turn changed to black");
                 gameState.currentUserTurnId = 0;
                 gameState.leftTurnsToEnterUsers2Queen -= 1;
             }
 
+
             tilemapStorage.Remove(tilemap.WorldToCell(initialPosition), tokenId);
             tilemapStorage.Insert(tilemapPosition, new TileInfo(type, userId, tokenId));
 
-            if(type == InsectType.Beetle)
+            if (type == InsectType.Beetle)
             {
                 var picesOnBoard = tilemapStorage.GetPieces(tilemapPosition);
 
-                if(picesOnBoard != null && picesOnBoard.Count > 1)
+                if (picesOnBoard != null && picesOnBoard.Count > 1)
                 {
                     var gameObject = pieces[picesOnBoard[picesOnBoard.Count - 2].tokenId];
 
-                    pieces[tokenId].GetComponent<SpriteRenderer>().sortingOrder = gameObject.GetComponent<SpriteRenderer>().sortingOrder + 1; 
+                    pieces[tokenId].GetComponent<SpriteRenderer>().sortingOrder = gameObject.GetComponent<SpriteRenderer>().sortingOrder + 1;
 
                 }
 
@@ -133,8 +202,8 @@ public class GameManager : MonoBehaviour
 
             gameState.totalTrurnsSinceStart += 1;
             UpdateHintText();
-            
-            if(!isAttachedToBoard)
+
+            if (!isAttachedToBoard)
             {
                 gameState.totalPiecesInGame += 1;
             }
@@ -151,13 +220,43 @@ public class GameManager : MonoBehaviour
                 hintText.text = winner == 0 ? "Black player won" : "White player won";
             }
 
+            if (!isAgentMove)
+            {
+                handleAgent();
+            }
+
             return (temp, true);
         }
 
-        
-
-
         return (initialPosition, false);
+    }
+
+    private void handleAgent()
+    {
+
+        Token[] tokens = new Token[22];
+
+        for(int i = 0; i < pieces.Length; i++)
+        {
+            Vector3Int pos = tilemap.WorldToCell(pieces[i].transform.position);
+            Piece p = pieces[i].GetComponent<Piece>();
+
+            tokens[i] = new Token(pos.x, pos.y, 0, p.tokenId, p.type, p.isAttachedToBoard, p.userId);
+        }
+
+        Board gameBoard = new Board(tokens ,gameState, moveManager);
+
+        Agent agent = new Agent(moveManager, tilemapStorage, gameBoard);
+
+        Move mv = agent.getRandomMove();
+
+
+        
+        StartCoroutine(SmoothLerp(tilemap.CellToWorld(mv.from), tilemap.CellToWorld(mv.to), pieces[mv.token.tokenId], 4f, () => {
+            GetAcurratePositionOnTilemap(mv.token.type, mv.token.userId, tilemap.CellToWorld(mv.from), tilemap.CellToWorld(mv.to), !mv.isOpenningMove, mv.token.tokenId, true);
+            Debug.Log("called line 247");
+        }));
+
     }
 
     // Update is called once per frame
@@ -176,7 +275,7 @@ public class GameManager : MonoBehaviour
         if(true)
         {
             return;
-        }
+        }   
 
         Debug.Log(layoutBounds.xMax + " - " + layoutBounds.xMin);
 

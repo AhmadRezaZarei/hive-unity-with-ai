@@ -58,6 +58,51 @@ public class MoveManager
         return res;
     }
 
+
+    public List<Vector3Int> GetOpenningMoves(InsectType type, int userId, bool isFirstMove)
+    {
+
+        List<Vector3Int> candidates = new List<Vector3Int>();
+        HashSet<string> added = new HashSet<string>();
+
+        tilemapStorage.ForEeachTiles((position, tileInfo, hIndex) => { 
+
+
+            if(isFirstMove)
+            {
+                Vector3Int[] candidatesArray =  TilemapUtility.FindRing(position, 1);
+
+                foreach(Vector3Int c in candidatesArray)
+                {
+                    candidates.Add(c);
+                }
+
+                return;
+            }
+
+
+            if(tileInfo.userId != userId)
+            {
+                return;
+            }
+
+            Vector3Int[] ring = TilemapUtility.FindRing(position, 1);
+
+            foreach(Vector3Int v in ring)
+            {
+                if(isValidForOpenningMove(type, userId, v))
+                {
+                    candidates.Add(v);
+                }
+            }
+
+
+
+        });
+
+        return candidates;
+    }
+
     public List<Vector3Int> GetAntCandidateDestinations(Vector3Int antPosition, int tokenId)
     {
         List<Vector3Int> candiates = new List<Vector3Int>();
@@ -81,10 +126,11 @@ public class MoveManager
                 }
 
                 if(IsValidMoveForAnt(v, tokenId))
+                {
+                    added.Add(v.GetUniqueKey());
+                    candiates.Add(v);
+                }
 
-                added.Add(v.GetUniqueKey());
-
-                candiates.Add(v);
 
             }
 
@@ -92,8 +138,6 @@ public class MoveManager
 
         return candiates;
     }
-
-
 
     public List<Vector3Int> GetSpiderCandidateDestinations(Vector3Int spiderPosition)
     {
@@ -105,10 +149,6 @@ public class MoveManager
 
         return list;
     }
-
-
-
-
 
     public bool isMovable(Vector3Int initialPosition, bool isBeetle, int tokenId)
     {
@@ -203,7 +243,6 @@ public class MoveManager
     private bool IsValidMoveForAnt(Vector3Int tilemapPosition, int tokenId)
     {
 
-
         if (!tilemapStorage.isEmptyTile(tilemapPosition))
         {
             return false;
@@ -239,8 +278,6 @@ public class MoveManager
             return false;
         }
 
-
-
         return true;
     }
 
@@ -258,12 +295,13 @@ public class MoveManager
         return false;
     }
 
-    public bool isValidPosition(InsectType type, int userId, Vector3Int destinationPosition, bool isOpenningMove, int tokenId, Vector3Int initialPosition)
+    public bool isValidPosition(InsectType type, int userId, Vector3Int destinationPosition, bool isOpenningMove, int tokenId, Vector3Int initialPosition, bool changeGameState = true)
     {
 
 
         if (!isOpenningMove)
         {
+            // this tells us the token is under the beetle or not
             if (!tilemapStorage.canMove(initialPosition, tokenId))
             {
                 return false;
@@ -296,11 +334,14 @@ public class MoveManager
 
             if (userId == 0)
             {
+                Debug.Log("MoveManager337:=> gameState.isUser1QueenEntered => true");
                 gameState.isUser1QueenEntered = true;
             }
             else
             {
                 gameState.isUser2QueenEntered = true;
+
+                Debug.Log("MoveManager344:=> gameState.isUser2QueenEntered => true");
             }
 
         }
@@ -348,7 +389,7 @@ public class MoveManager
 
         if (type == InsectType.Ant && !isOpenningMove)
         {
-            return IsValidMoveForAnt(userId, destinationPosition, tokenId);
+            return IsValidMoveForAnt(destinationPosition, tokenId);
         }
 
 
@@ -390,10 +431,6 @@ public class MoveManager
 
         return false;
     }
-
-
-
-
 
     public bool isValidForOpenningMove(InsectType type, int userId, Vector3Int tilemapPosition)
     {
@@ -466,7 +503,6 @@ public class MoveManager
         return list;
     }
 
-
     public List<Vector3Int> GetQueenCandidateDestinations(Vector3Int queenPosition)
     {
         var temp = tilemapStorage.GetSurroundingEmptyTiles(queenPosition, 1);
@@ -486,7 +522,6 @@ public class MoveManager
 
         return res;
     }
-
 
     private bool hasNoneEmptyNeighboar(Vector3Int position, Vector3Int except)
     {

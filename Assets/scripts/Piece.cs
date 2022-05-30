@@ -5,18 +5,18 @@ using UnityEngine;
 public class Piece : MonoBehaviour
 {
 
-    private bool isAttachedToBoard = false;
+    public bool isAttachedToBoard = false;
 
     private GameManager gamemanager;
 
     [SerializeField]
-    private InsectType type;
+    public InsectType type;
 
     [SerializeField]
-    private int tokenId;
+    public int tokenId;
 
     [SerializeField]
-    private int userId;
+    public int userId;
 
     private Vector3 initialPosition;
 
@@ -57,7 +57,7 @@ public class Piece : MonoBehaviour
         
         Vector3 currentPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition) - offset; 
         
-        var inf = gamemanager.GetAcurratePositionOnTilemap(type, userId, initialPosition, currentPosition, isAttachedToBoard, tokenId);
+        var inf = gamemanager.GetAcurratePositionOnTilemap(type, userId, initialPosition, currentPosition, isAttachedToBoard, tokenId, false);
 
         transform.position = inf.Item1;
 

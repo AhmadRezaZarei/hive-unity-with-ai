@@ -7,10 +7,16 @@ public class Board
     GameState gameState;
     MoveManager moveManager;
 
+    public GameState getGameState()
+    {
+        return this.gameState;
+    }
+
     public Board(Token[] tokens, GameState gameState, MoveManager moveManager)
     {
         this.tokens = tokens;
         this.gameState = gameState;
+        this.moveManager = moveManager;
     }
 
 
@@ -37,8 +43,7 @@ public class Board
     public List<Move> getPossibleMoves(int userId)
     {
 
-        List<Move> moves = new List<Move>();
-
+        List<Move> totalMoves = new List<Move>();
 
         // this array cotains openning moves and avoids two openning moves with same insect type
         List<InsectType> openningMoves = new List<InsectType>();
@@ -54,7 +59,6 @@ public class Board
                 continue;
             }
 
-
             // queen has not entered the game and current_token is in the game;
             if(token.isInTheBoard && !isQueenEntered)
             {
@@ -62,36 +66,83 @@ public class Board
             }
 
 
-            // token is not movable
-            if (!moveManager.isMovable(token.GetPositionInTilemap(), token.type == InsectType.Beetle, token.tokenId)) {
+            bool isOpenningMove = !token.isInTheBoard;
+
+            List<Vector3Int> posibleCandidatePositions = new List<Vector3Int>();
+
+            if (isOpenningMove && openningMoves.Contains(token.type))
+            {
                 continue;
             }
 
-
-            switch(token.type)
+            if (isOpenningMove)
             {
-                case InsectType.Ant:
-                    break;
-                case InsectType.Beetle:
-                    break;
-                case InsectType.Grasshopper:
-                    break;
-                case InsectType.Queen:
-                    break;
-                case InsectType.Spider:
-                    break;
-                default:
-                    break;
+                openningMoves.Add(token.type);
+
+                // get openning moves 
+
+                posibleCandidatePositions = moveManager.GetOpenningMoves(token.type, token.userId, gameState.totalPiecesInGame == 1);
 
             }
 
+            // token is not movable
+            if (!isOpenningMove && !moveManager.isMovable(token.GetPositionInTilemap(), token.type == InsectType.Beetle, token.tokenId)) {
+                continue;
+            }
+
+            Vector3Int tokenPosition = token.GetPositionInTilemap();
+
+           
+
             
+           
+            if(!isOpenningMove)
+            {
+                switch (token.type)
+                {
+                    case InsectType.Ant:
+                        posibleCandidatePositions = moveManager.GetAntCandidateDestinations(tokenPosition, token.tokenId);
+                        break;
+                    case InsectType.Beetle:
+                        posibleCandidatePositions = moveManager.GetBeetleDestinations(tokenPosition);
+                        break;
+                    case InsectType.Grasshopper:
+                        posibleCandidatePositions = moveManager.GetGrasshopperCandidateDestinations(tokenPosition);
+                        break;
+                    case InsectType.Queen:
+                        posibleCandidatePositions = moveManager.GetQueenCandidateDestinations(tokenPosition);
+                        break;
+                    case InsectType.Spider:
+                        posibleCandidatePositions = moveManager.GetSpiderCandidateDestinations(tokenPosition);
+                        break;
+                    default:
+                        break;
+
+                }
+            }
+
+
+
+            List<Vector3Int> finalCandidatePositions = new List<Vector3Int>();
+
+            foreach(Vector3Int cv in posibleCandidatePositions)
+            {
+
+                if(moveManager.isValidPosition(token.type, token.userId, cv, isOpenningMove, token.tokenId, tokenPosition))
+                {
+                    Move move = new Move(token, tokenPosition, cv, isOpenningMove);
+
+                    totalMoves.Add(move);
+                    
+                }
+
+            }
+
 
 
         }
 
-
-        return null;
+        return totalMoves;
     }
 
 }
