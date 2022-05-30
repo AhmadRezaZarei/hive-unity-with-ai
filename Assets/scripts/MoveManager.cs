@@ -295,7 +295,7 @@ public class MoveManager
         return false;
     }
 
-    public bool isValidPosition(InsectType type, int userId, Vector3Int destinationPosition, bool isOpenningMove, int tokenId, Vector3Int initialPosition, bool changeGameState = true)
+    public bool isValidPosition(InsectType type, int userId, Vector3Int destinationPosition, bool isOpenningMove, int tokenId, Vector3Int initialPosition)
     {
 
 
@@ -329,22 +329,7 @@ public class MoveManager
 
 
 
-        if (type == InsectType.Queen && isOpenningMove)
-        {
-
-            if (userId == 0)
-            {
-                Debug.Log("MoveManager337:=> gameState.isUser1QueenEntered => true");
-                gameState.isUser1QueenEntered = true;
-            }
-            else
-            {
-                gameState.isUser2QueenEntered = true;
-
-                Debug.Log("MoveManager344:=> gameState.isUser2QueenEntered => true");
-            }
-
-        }
+        
 
 
 

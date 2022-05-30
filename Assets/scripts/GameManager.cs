@@ -182,6 +182,19 @@ public class GameManager : MonoBehaviour
                 gameState.leftTurnsToEnterUsers2Queen -= 1;
             }
 
+            if (type == InsectType.Queen)
+            {
+
+                if (userId == 0)
+                {
+                    gameState.isUser1QueenEntered = true;
+                }
+                else
+                {
+                    gameState.isUser2QueenEntered = true;
+                }
+
+            }
 
             tilemapStorage.Remove(tilemap.WorldToCell(initialPosition), tokenId);
             tilemapStorage.Insert(tilemapPosition, new TileInfo(type, userId, tokenId));
