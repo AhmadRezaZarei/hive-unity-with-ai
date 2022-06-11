@@ -58,29 +58,28 @@ public class MoveManager
         return res;
     }
 
-
     public List<Vector3Int> GetOpenningMoves(InsectType type, int userId, bool isFirstMove)
     {
 
         List<Vector3Int> candidates = new List<Vector3Int>();
-        HashSet<string> added = new HashSet<string>();
+        HashSet<string> visited = new HashSet<string>();
 
-        tilemapStorage.ForEeachTiles((position, tileInfo, hIndex) => { 
+        tilemapStorage.ForEeachTiles((position, tileInfo, hIndex) => {
 
-            if(isFirstMove)
+            if (isFirstMove)
             {
-                Vector3Int[] candidatesArray =  TilemapUtility.FindRing(position, 1);
+                Vector3Int[] candidatesArray = TilemapUtility.FindRing(position, 1);
 
-                foreach(Vector3Int c in candidatesArray)
+                foreach (Vector3Int c in candidatesArray)
                 {
                     candidates.Add(c);
+                    return;
                 }
 
                 return;
             }
 
-
-            if(tileInfo.userId != userId)
+            if (tileInfo.userId != userId)
             {
                 return;
             }
@@ -89,12 +88,12 @@ public class MoveManager
 
             foreach(Vector3Int v in ring)
             {
-                if(isValidForOpenningMove(type, userId, v))
+                if(!visited.Contains(v.GetUniqueKey()) && isValidForOpenningMove(type, userId, v))
                 {
                     candidates.Add(v);
+                    visited.Add(v.GetUniqueKey());
                 }
             }
-
 
 
         });
@@ -316,7 +315,7 @@ public class MoveManager
         int leftTurnsToEnterQueen = userId == 0 ? gameState.leftTurnsToEnterUsers1Queen : gameState.leftTurnsToEnterUsers2Queen;
         bool isQueenEntered = userId == 0 ? gameState.isUser1QueenEntered : gameState.isUser2QueenEntered;
 
-        Debug.Log("MoveManager:=> line 319");
+        Debug.Log("MoveManager:=> line 319" + isQueenEntered + "   " + isOpenningMove);
 
         if (!isQueenEntered && !isOpenningMove)
         {
@@ -435,7 +434,7 @@ public class MoveManager
 
 
 
-        Debug.Log("MoveManager:=> line 438");
+        Debug.Log("MoveManager:=> line 438 " + type + "  " + InsectType.Beetle);
 
         if (type == InsectType.Beetle && !isOpenningMove)
         {
@@ -455,8 +454,7 @@ public class MoveManager
     public bool isValidForOpenningMove(InsectType type, int userId, Vector3Int tilemapPosition)
     {
 
-     
-        if(type != InsectType.Beetle && tilemapStorage.isEmptyTile(tilemapPosition))
+        if(type != InsectType.Beetle && !tilemapStorage.isEmptyTile(tilemapPosition))
         {
             return false;
         }

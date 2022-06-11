@@ -8,22 +8,127 @@ public class Agent
     private MoveManager moveManager;
     private TilemapStorage storage;
     private Board gameBoard;
+    private List<Move> currentMoves;
+    private Evaluator evaluator;
+
     public Agent(MoveManager manager, TilemapStorage storage, Board gameBoard)
     {
         this.moveManager = manager;
         this.storage = storage;
         this.gameBoard = gameBoard;
+
     }
 
+    public List<Move> getCurrentMoves()
+    {
+        return currentMoves;
+    }
     public Move getRandomMove()
     {
 
+        return findBestMove();
         printGameState();
-        List<Move> totalMoves = gameBoard.getPossibleMoves(1);
-        Debug.Log("posible moves: " +  totalMoves.Count);
+        currentMoves = gameBoard.getPossibleMoves(1);
+        Debug.Log("posible moves: " + currentMoves.Count);
         System.Random ran = new System.Random();
-        int num = ran.Next() % totalMoves.Count;
-        return totalMoves[num];
+        int num = ran.Next() % currentMoves.Count;
+        return currentMoves[num];
+    }
+
+    public Move findBestMove()
+    {
+        var (move, moveValue) = minimax(gameBoard, 2, true);
+        return move;
+    }
+
+    public (Move, int) minimax(Board board, int depth, bool isMaximizingPlayer)
+    {
+        var posibleMoves = board.getPossibleMoves(isMaximizingPlayer ? 1 : 0);
+
+        Move bestMove = null;
+        int bestMoveValue = isMaximizingPlayer ? int.MinValue : int.MaxValue;
+
+
+        if(depth == 0)
+        {
+            for (int i = 0; i < posibleMoves.Count; i++)
+            {
+                Move move = posibleMoves[i];
+                
+                if (i == 0)
+                {
+                    bestMove = move;
+                    gameBoard.AddMove(move);
+
+
+                    Evaluator eval1 = new Evaluator(gameBoard.GetTilemapStorage(), gameBoard.getGameState());
+                    int evalulatedStateValue = eval1.evaluateState();
+                    bestMoveValue = evalulatedStateValue;
+                    gameBoard.RemoveMove(move);
+                    continue;
+                }
+
+                gameBoard.AddMove(move);
+                Evaluator eval = new Evaluator(gameBoard.GetTilemapStorage(), gameBoard.getGameState());
+                int evaluateStateValue = eval.evaluateState();
+                gameBoard.RemoveMove(move);
+                if (isMaximizingPlayer)
+                {
+                    if (bestMoveValue < evaluateStateValue)
+                    {
+                        bestMove = move;
+                        bestMoveValue = evaluateStateValue;
+                    }
+                    continue;
+                }
+
+                // is not maximaizing player
+                if (bestMoveValue > evaluateStateValue)
+                {
+                    bestMove = move;
+                    bestMoveValue = evaluateStateValue;
+                }
+
+            }
+
+            return (bestMove, bestMoveValue);
+        }
+
+
+
+        for(int i = 0; i < posibleMoves.Count; i++)
+        {
+
+            Move move = posibleMoves[i];
+
+            board.AddMove(move);
+
+            
+            var (bestMoveMinimax, bestMoveValueMinimax) = minimax(board, depth - 1, !isMaximizingPlayer);
+
+            board.RemoveMove(move);
+
+            if(isMaximizingPlayer)
+            {
+
+                if(bestMoveValueMinimax > bestMoveValue)
+                {
+                    bestMoveValue = bestMoveValueMinimax;
+                    bestMove = move;
+                }
+
+            } else
+            {
+                if (bestMoveValueMinimax < bestMoveValue)
+                {
+                    bestMoveValue = bestMoveValueMinimax;
+                    bestMove = move;
+                }
+            }
+
+        }
+
+        return (bestMove, bestMoveValue);
     }
 
     private void printGameState()

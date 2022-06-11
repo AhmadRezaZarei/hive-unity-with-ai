@@ -5,11 +5,13 @@ using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using System;
-public class GameManager : MonoBehaviour
+public class GameManager : MonoBehaviour, IMoveDisplayer
 {
 
     private MoveManager moveManager;
 
+    [SerializeField]
+    private MovePanel movePanel;
 
     [SerializeField]
     private Text hintText;
@@ -187,10 +189,13 @@ public class GameManager : MonoBehaviour
 
                 if (userId == 0)
                 {
+                    Debug.Log("game state black queen entered ");
                     gameState.isUser1QueenEntered = true;
                 }
                 else
                 {
+
+                    Debug.Log("game state white queen entered ");
                     gameState.isUser2QueenEntered = true;
                 }
 
@@ -235,7 +240,7 @@ public class GameManager : MonoBehaviour
 
             if (!isAgentMove)
             {
-                // handleAgent();
+                handleAgent();
             }
 
             return (temp, true);
@@ -257,13 +262,25 @@ public class GameManager : MonoBehaviour
             tokens[i] = new Token(pos.x, pos.y, 0, p.tokenId, p.type, p.isAttachedToBoard, p.userId);
         }
 
-        Board gameBoard = new Board(tokens ,gameState, moveManager);
+        Board gameBoard = new Board(tokens ,gameState, moveManager, tilemapStorage);
+        
+        for(int i = 0; i < 22; i++)
+        {
+            if(i != tokens[i].tokenId)
+            {
+                Debug.Log("########## confilict " + i + "   " + tokens[i].type);
+            }
+        }
 
         Agent agent = new Agent(moveManager, tilemapStorage, gameBoard);
 
         Move mv = agent.getRandomMove();
 
-        StartCoroutine(SmoothLerp(tilemap.CellToWorld(mv.from), tilemap.CellToWorld(mv.to), pieces[mv.token.tokenId], 4f, () => {
+        Debug.Log("Agent move is null ?:: " + (mv == null));
+        
+        movePanel.DisplayMoves(agent.getCurrentMoves());
+
+        StartCoroutine(SmoothLerp(tilemap.CellToWorld(mv.from), tilemap.CellToWorld(mv.to), pieces[mv.token.tokenId], 1.3f, () => {
             var (descTos, isValid) = GetAcurratePositionOnTilemap(mv.token.type, mv.token.userId, tilemap.CellToWorld(mv.from), tilemap.CellToWorld(mv.to), !mv.isOpenningMove, mv.token.tokenId, true);
             if(!isValid)
             {
@@ -305,5 +322,41 @@ public class GameManager : MonoBehaviour
             }
         }
 
+    }
+
+    private GameObject moveOrigin;
+    private GameObject moveDestination;
+    
+    public void Display(Move move)
+    {
+
+        if(moveOrigin == null)
+        {
+            moveOrigin = Instantiate(hintCircle, tilemap.CellToWorld(move.from), Quaternion.identity, transform);
+        }
+
+        if (moveDestination == null)
+        {
+            moveDestination = Instantiate(hintCircle, tilemap.CellToWorld(move.to), Quaternion.identity, transform);
+        }
+
+        moveOrigin.transform.position = tilemap.CellToWorld(move.from);
+        moveDestination.transform.position = tilemap.CellToWorld(move.to);
+
+        moveOrigin.SetActive(true);
+        moveDestination.SetActive(true);
+    }
+
+    public void DismissAll()
+    {
+        if(moveOrigin != null)
+        {
+            moveOrigin.SetActive(false);
+        }
+
+        if(moveDestination != null)
+        {
+            moveDestination.SetActive(false);
+        }
     }
 }
