@@ -13,6 +13,11 @@ public class MoveManager
         this.gameState = gameState;
     }
 
+    public MoveManager Clone(TilemapStorage ts)
+    {
+        return new MoveManager(ts, gameState);
+    }
+
     private List<Vector3Int> DepthLimitedDistinitions(Vector3Int position, Vector3Int except, HashSet<string> visited, HashSet<string> reachedPositionsSet, int currentDepth)
     {
 
@@ -129,7 +134,6 @@ public class MoveManager
                     candiates.Add(v);
                 }
 
-
             }
 
         });
@@ -224,8 +228,6 @@ public class MoveManager
                         MovableHelperDFS(v, except, visited);
                     }
                 }
-
-
 
             }
 
@@ -332,11 +334,6 @@ public class MoveManager
             return false;
         }
 
-
-
-
-
-
         Debug.Log("MoveManager:=> line 341");
 
         if (gameState.totalTrurnsSinceStart == 0)
@@ -387,6 +384,7 @@ public class MoveManager
 
         if (!isMovable(initialPosition, type == InsectType.Beetle, tokenId) && !isOpenningMove)
         {
+            isMovable(initialPosition, type == InsectType.Beetle, tokenId);
             return false;
         }
 
@@ -442,7 +440,6 @@ public class MoveManager
 
             return ContainsItem(candidatePositions, destinationPosition);
 
-            Debug.Log("MoveManager:=> line 446");
         }
 
 

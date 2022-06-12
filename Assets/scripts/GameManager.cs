@@ -38,6 +38,13 @@ public class GameManager : MonoBehaviour, IMoveDisplayer
     [SerializeField]
     private GameObject[] pieces;
 
+    public MoveManager Clone(TilemapStorage storage)
+    {
+        var clone = new MoveManager(storage, this.gameState);
+
+        return clone;
+    }
+
     private void temp_hint(List<Vector3Int> list)
     {
 
@@ -252,17 +259,20 @@ public class GameManager : MonoBehaviour, IMoveDisplayer
     private void handleAgent()
     {
 
+
+        Debug.Log("Entered game state q1 " + gameState.isUser1QueenEntered + "    q2 " + gameState.isUser2QueenEntered);
         Token[] tokens = new Token[22];
 
+        var clonedStorage = tilemapStorage.Clone();
+        var clonedMoveManager = moveManager.Clone(clonedStorage);
         for(int i = 0; i < pieces.Length; i++)
         {
             Vector3Int pos = tilemap.WorldToCell(pieces[i].transform.position);
             Piece p = pieces[i].GetComponent<Piece>();
-
             tokens[i] = new Token(pos.x, pos.y, 0, p.tokenId, p.type, p.isAttachedToBoard, p.userId);
         }
 
-        Board gameBoard = new Board(tokens ,gameState, moveManager, tilemapStorage);
+        Board gameBoard = new Board(tokens ,gameState, clonedMoveManager, clonedStorage);
         
         for(int i = 0; i < 22; i++)
         {
@@ -272,7 +282,7 @@ public class GameManager : MonoBehaviour, IMoveDisplayer
             }
         }
 
-        Agent agent = new Agent(moveManager, tilemapStorage, gameBoard);
+        Agent agent = new Agent(clonedMoveManager, clonedStorage, gameBoard);
 
         Move mv = agent.getRandomMove();
 

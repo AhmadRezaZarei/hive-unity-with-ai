@@ -43,11 +43,26 @@ public class Agent
 
     public (Move, int) minimax(Board board, int depth, bool isMaximizingPlayer)
     {
+
+        if(depth == 2 && board.getGameState().isUser1QueenEntered)
+        {
+            Debug.Log("Agent Line 41 called");
+            var aa = 0;
+           // Debug.Log("queen token status " + gameBoard.)
+        }
+
         var posibleMoves = board.getPossibleMoves(isMaximizingPlayer ? 1 : 0);
 
         Move bestMove = null;
         int bestMoveValue = isMaximizingPlayer ? int.MinValue : int.MaxValue;
 
+        foreach(Move m in posibleMoves)
+        {
+            if(m.token.userId == 0 && m.isOpenningMove && m.token.type == InsectType.Queen)
+            {
+                Debug.Log("Agent opening move queen");
+            }
+        }
 
         if(depth == 0)
         {

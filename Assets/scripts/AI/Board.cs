@@ -5,7 +5,7 @@ using System.Collections;
 
 public class Board 
 {
-    Token[] tokens;
+    public Token[] tokens;
     GameState gameState;
     MoveManager moveManager;
     TilemapStorage storage;
@@ -80,16 +80,13 @@ public class Board
         // update game state
 
         gameState.currentUserTurnId = move.token.userId == 0 ? 1 : 0;
-        gameState.isUser1QueenEntered = move.token.userId == 0 && move.isOpenningMove && move.token.type == InsectType.Queen ? true : gameState.isUser1QueenEntered;
-        gameState.isUser2QueenEntered = move.token.userId == 1 && move.isOpenningMove && move.token.type == InsectType.Queen ? true : gameState.isUser2QueenEntered;
+        gameState.setIsQueen1Entered(move.token.userId == 0 && move.isOpenningMove && move.token.type == InsectType.Queen ? true : gameState.isUser1QueenEntered, "line 83");
+        gameState.setIsQueen2Entered(move.token.userId == 1 && move.isOpenningMove && move.token.type == InsectType.Queen ? true : gameState.isUser2QueenEntered, "line 84");
         gameState.leftTurnsToEnterUsers1Queen += move.token.userId == 0 ? -1 : 0;
         gameState.leftTurnsToEnterUsers2Queen += move.token.userId == 1 ? -1 : 0;
         gameState.totalPiecesInGame += move.isOpenningMove ? 1 : 0;
         gameState.totalTrurnsSinceStart += 1;
         
-
-
-
     }
 
     public TilemapStorage GetTilemapStorage()
@@ -134,11 +131,17 @@ public class Board
         }
 
         this.storage.Remove(move.to, move.token.tokenId);
+        
+        if(!move.isOpenningMove)
+        {
+            this.storage.Insert(move.from, move.token.getCorespondingTileInfo());
+        }
+
 
         // update game state
         gameState.currentUserTurnId = move.token.userId == 0 ? 0 : 1;
-        gameState.isUser1QueenEntered = move.token.userId == 0 && move.isOpenningMove && move.token.type == InsectType.Queen ? false : gameState.isUser1QueenEntered;
-        gameState.isUser2QueenEntered = move.token.userId == 1 && move.isOpenningMove && move.token.type == InsectType.Queen ? false : gameState.isUser2QueenEntered;
+        gameState.setIsQueen1Entered(move.token.userId == 0 && move.isOpenningMove && move.token.type == InsectType.Queen ? false : gameState.isUser1QueenEntered, "line 141");
+        gameState.setIsQueen2Entered(move.token.userId == 1 && move.isOpenningMove && move.token.type == InsectType.Queen ? false : gameState.isUser2QueenEntered, "line 142");
         gameState.leftTurnsToEnterUsers1Queen += move.token.userId == 0 ? +1 : 0;
         gameState.leftTurnsToEnterUsers2Queen += move.token.userId == 1 ? +1 : 0;
         gameState.totalPiecesInGame += move.isOpenningMove ? -1 : 0;
@@ -184,6 +187,11 @@ public class Board
 
         bool isQueenEntered = userId == 0 ? gameState.isUser1QueenEntered : gameState.isUser2QueenEntered;
 
+        if(gameState.isUser1QueenEntered)
+        {
+
+        }
+
         foreach (Token token in tokens)
         {
 
@@ -202,12 +210,14 @@ public class Board
 
             bool isOpenningMove = !token.isInTheBoard;
 
-            List<Vector3Int> posibleCandidatePositions = new List<Vector3Int>();
 
             if (isOpenningMove && openningMoves.Contains(token.type))
             {
                 continue;
             }
+            
+            
+            List<Vector3Int> posibleCandidatePositions = new List<Vector3Int>();
 
             if (isOpenningMove)
             {

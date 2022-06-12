@@ -6,6 +6,33 @@ using UnityEngine.Tilemaps;
 public class TilemapStorage
 {
     
+
+    public TilemapStorage Clone()
+    {
+        var clone = new TilemapStorage();
+        var map = new Dictionary<String, List<TileInfo>>();
+
+        foreach (KeyValuePair<String, List<TileInfo>> entry in tiles)
+        {
+
+            var lst = new List<TileInfo>(entry.Value.Count);
+
+            for (int i = 0; i < entry.Value.Count; i++)
+            {
+                lst.Add(entry.Value[i].Clone());
+            }
+
+            map[entry.Key] = lst;
+
+        }
+
+
+        clone.tiles = map;
+        clone.cellBounds = this.cellBounds;
+        return clone;
+
+    }
+
     public delegate void Iterator(Vector3Int position, TileInfo ti, int hIndex);
 
     private Dictionary<String, List<TileInfo>> tiles;
@@ -47,13 +74,15 @@ public class TilemapStorage
             temp.Add(data);
 
             tiles[pos.GetUniqueKey()] = temp;
-
+            Debug.Log("TileStorage insert tile size: " + tiles.Count);
             return;
         }
 
         var lst = new List<TileInfo>();
         lst.Add(data);
         tiles.Add(pos.GetUniqueKey(), lst);
+
+        Debug.Log("TileStorage insert tile size: " + tiles.Count);
 
     }
 
@@ -72,6 +101,7 @@ public class TilemapStorage
 
         if(!tiles.ContainsKey(pos.GetUniqueKey()))
         {
+            Debug.Log("TileStorage do not found tile");
             return true;
         }
 
@@ -80,6 +110,7 @@ public class TilemapStorage
         if(list.Count == 1)
         {
             tiles.Remove(pos.GetUniqueKey());
+            Debug.Log("TileStorage remove tile size: " + tiles.Count);
             return true;
         }
 
@@ -87,8 +118,11 @@ public class TilemapStorage
         {
             list.RemoveAt(list.Count - 1);
             tiles[pos.GetUniqueKey()] = list;
+            Debug.Log("TileStorage remove tile size: " + tiles.Count);
             return true;
         }
+
+        Debug.Log("TileStorage remove tile size: " + tiles.Count);
 
         return false;
     }
