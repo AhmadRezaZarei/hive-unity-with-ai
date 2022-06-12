@@ -35,8 +35,16 @@ public class Agent
         return currentMoves[num];
     }
 
+    public int total = 0;
     public Move findBestMove()
     {
+
+        if(gameBoard.getGameState().isUser1QueenEntered)
+        {
+            Debug.Log("total is 24");
+            total = 24;
+        }
+
         var (move, moveValue) = minimax(gameBoard, 2, true);
         return move;
     }
@@ -56,14 +64,6 @@ public class Agent
         Move bestMove = null;
         int bestMoveValue = isMaximizingPlayer ? int.MinValue : int.MaxValue;
 
-        foreach(Move m in posibleMoves)
-        {
-            if(m.token.userId == 0 && m.isOpenningMove && m.token.type == InsectType.Queen)
-            {
-                Debug.Log("Agent opening move queen");
-            }
-        }
-
         if(depth == 0)
         {
             for (int i = 0; i < posibleMoves.Count; i++)
@@ -80,6 +80,12 @@ public class Agent
                     int evalulatedStateValue = eval1.evaluateState();
                     bestMoveValue = evalulatedStateValue;
                     gameBoard.RemoveMove(move);
+
+                    if(total == 24 && !gameBoard.getGameState().isUser1QueenEntered)
+                    {
+                        int p = 0;
+                    }
+
                     continue;
                 }
 
@@ -87,6 +93,11 @@ public class Agent
                 Evaluator eval = new Evaluator(gameBoard.GetTilemapStorage(), gameBoard.getGameState());
                 int evaluateStateValue = eval.evaluateState();
                 gameBoard.RemoveMove(move);
+
+                if (total == 24 && !gameBoard.getGameState().isUser1QueenEntered)
+                {
+                    int p = 0;
+                }
                 if (isMaximizingPlayer)
                 {
                     if (bestMoveValue < evaluateStateValue)
@@ -123,7 +134,11 @@ public class Agent
 
             board.RemoveMove(move);
 
-            if(isMaximizingPlayer)
+            if (total == 24 && !gameBoard.getGameState().isUser1QueenEntered)
+            {
+                int p = 0;
+            }
+            if (isMaximizingPlayer)
             {
 
                 if(bestMoveValueMinimax > bestMoveValue)

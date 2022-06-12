@@ -245,6 +245,9 @@ public class GameManager : MonoBehaviour, IMoveDisplayer
                 hintText.text = winner == 0 ? "Black player won" : "White player won";
             }
 
+
+            pieces[tokenId].GetComponent<Piece>().updateState(temp, true);
+
             if (!isAgentMove)
             {
                 handleAgent();
@@ -260,6 +263,10 @@ public class GameManager : MonoBehaviour, IMoveDisplayer
     {
 
 
+        if(gameState.isUser1QueenEntered)
+        {
+            Debug.Log("AAAAA");
+        }
         Debug.Log("Entered game state q1 " + gameState.isUser1QueenEntered + "    q2 " + gameState.isUser2QueenEntered);
         Token[] tokens = new Token[22];
 
