@@ -294,47 +294,47 @@ public class MoveManager
     {
 
 
-        Debug.Log("# # # # #");
-        Debug.Log("MoveManager:=> line 297");
+        Debug2.Log("# # # # #");
+        Debug2.Log("MoveManager:=> line 297");
 
         if (!isOpenningMove)
         {
 
-            Debug.Log("MoveManager:=> line 302");
+            Debug2.Log("MoveManager:=> line 302");
 
             // this tells us the token is under the beetle or not
             if (!tilemapStorage.canMove(initialPosition, tokenId))
             {
-                Debug.Log("MoveManager:=> line 307");
+                Debug2.Log("MoveManager:=> line 307");
                 return false;
             }
-            Debug.Log("MoveManager:=> line 310");
+            Debug2.Log("MoveManager:=> line 310");
 
         }
 
-        Debug.Log("MoveManager:=> line 315");
+        Debug2.Log("MoveManager:=> line 315");
 
         int leftTurnsToEnterQueen = userId == 0 ? gameState.leftTurnsToEnterUsers1Queen : gameState.leftTurnsToEnterUsers2Queen;
         bool isQueenEntered = userId == 0 ? gameState.isUser1QueenEntered : gameState.isUser2QueenEntered;
 
-        Debug.Log("MoveManager:=> line 319" + isQueenEntered + "   " + isOpenningMove);
+        Debug2.Log("MoveManager:=> line 319" + isQueenEntered + "   " + isOpenningMove);
 
         if (!isQueenEntered && !isOpenningMove)
         {
-            Debug.Log("MoveManager:=> line 323");
+            Debug2.Log("MoveManager:=> line 323");
             return false;
         }
 
 
-        Debug.Log("MoveManager:=> line 328");
+        Debug2.Log("MoveManager:=> line 328");
 
         if (leftTurnsToEnterQueen == 1 && !isQueenEntered && type != InsectType.Queen)
         {
-            Debug.Log("MoveManager:=> line 332");
+            Debug2.Log("MoveManager:=> line 332");
             return false;
         }
 
-        Debug.Log("MoveManager:=> line 341");
+        Debug2.Log("MoveManager:=> line 341");
 
         if (gameState.totalTrurnsSinceStart == 0)
         {
@@ -343,12 +343,12 @@ public class MoveManager
 
 
 
-        Debug.Log("MoveManager:=> line 350");
+        Debug2.Log("MoveManager:=> line 350");
 
         if (gameState.totalTrurnsSinceStart == 1)
         {
 
-            Debug.Log("MoveManager:=> line 355");
+            Debug2.Log("MoveManager:=> line 355");
 
             var neighoars = tilemapStorage.GetSurronudingTilePieces(destinationPosition, 1);
 
@@ -358,7 +358,7 @@ public class MoveManager
             }
 
 
-            Debug.Log("MoveManager:=> line 365");
+            Debug2.Log("MoveManager:=> line 365");
 
             if (neighoars[0].userId == userId)
             {
@@ -366,13 +366,13 @@ public class MoveManager
             }
 
 
-            Debug.Log("MoveManager:=> line 373");
+            Debug2.Log("MoveManager:=> line 373");
 
             return true;
         }
 
 
-        Debug.Log("MoveManager:=> line 379");
+        Debug2.Log("MoveManager:=> line 379");
 
         if (isOpenningMove)
         {
@@ -380,7 +380,7 @@ public class MoveManager
         }
 
 
-        Debug.Log("MoveManager:=> line 387");
+        Debug2.Log("MoveManager:=> line 387");
 
         if (!isMovable(initialPosition, type == InsectType.Beetle, tokenId) && !isOpenningMove)
         {
@@ -389,7 +389,7 @@ public class MoveManager
         }
 
 
-        Debug.Log("MoveManager:=> line 395");
+        Debug2.Log("MoveManager:=> line 395");
 
         if (type == InsectType.Ant && !isOpenningMove)
         {
@@ -397,7 +397,7 @@ public class MoveManager
         }
 
 
-        Debug.Log("MoveManager:=> line 403");
+        Debug2.Log("MoveManager:=> line 403");
 
         if (type == InsectType.Spider && !isOpenningMove)
         {
@@ -410,7 +410,7 @@ public class MoveManager
 
 
 
-        Debug.Log("MoveManager:=> line 416");
+        Debug2.Log("MoveManager:=> line 416");
 
         if (type == InsectType.Grasshopper && !isOpenningMove)
         {
@@ -421,7 +421,7 @@ public class MoveManager
 
 
 
-        Debug.Log("MoveManager:=> line 427");
+        Debug2.Log("MoveManager:=> line 427");
 
         if (type == InsectType.Queen && !isOpenningMove)
         {
@@ -432,7 +432,7 @@ public class MoveManager
 
 
 
-        Debug.Log("MoveManager:=> line 438 " + type + "  " + InsectType.Beetle);
+        Debug2.Log("MoveManager:=> line 438 " + type + "  " + InsectType.Beetle);
 
         if (type == InsectType.Beetle && !isOpenningMove)
         {
@@ -443,7 +443,7 @@ public class MoveManager
         }
 
 
-        Debug.Log("MoveManager:=> line 450");
+        Debug2.Log("MoveManager:=> line 450");
 
         return false;
     }

@@ -74,7 +74,7 @@ public class TilemapStorage
             temp.Add(data);
 
             tiles[pos.GetUniqueKey()] = temp;
-            Debug.Log("TileStorage insert tile size: " + tiles.Count);
+            Debug2.Log("TileStorage insert tile size: " + tiles.Count);
             return;
         }
 
@@ -82,7 +82,7 @@ public class TilemapStorage
         lst.Add(data);
         tiles.Add(pos.GetUniqueKey(), lst);
 
-        Debug.Log("TileStorage insert tile size: " + tiles.Count);
+        Debug2.Log("TileStorage insert tile size: " + tiles.Count);
 
     }
 
@@ -101,7 +101,7 @@ public class TilemapStorage
 
         if(!tiles.ContainsKey(pos.GetUniqueKey()))
         {
-            Debug.Log("TileStorage do not found tile");
+            Debug2.Log("TileStorage do not found tile");
             return true;
         }
 
@@ -110,7 +110,7 @@ public class TilemapStorage
         if(list.Count == 1)
         {
             tiles.Remove(pos.GetUniqueKey());
-            Debug.Log("TileStorage remove tile size: " + tiles.Count);
+            Debug2.Log("TileStorage remove tile size: " + tiles.Count);
             return true;
         }
 
@@ -118,11 +118,11 @@ public class TilemapStorage
         {
             list.RemoveAt(list.Count - 1);
             tiles[pos.GetUniqueKey()] = list;
-            Debug.Log("TileStorage remove tile size: " + tiles.Count);
+            Debug2.Log("TileStorage remove tile size: " + tiles.Count);
             return true;
         }
 
-        Debug.Log("TileStorage remove tile size: " + tiles.Count);
+        Debug2.Log("TileStorage remove tile size: " + tiles.Count);
 
         return false;
     }

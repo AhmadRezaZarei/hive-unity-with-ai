@@ -40,7 +40,7 @@ public class Board
     {
 
 
-        Debug.Log("is null ?::: move" + (move == null));
+        Debug2.Log("is null ?::: move" + (move == null));
 
         if (this.storage == null)
         {
@@ -51,7 +51,7 @@ public class Board
         Array.Sort(tokens, new myComparer());
 
 
-        Debug.Log("Move is null tilestorage " + (move == null));
+        Debug2.Log("Move is null tilestorage " + (move == null));
 
         var tokenObj = tokens[move.token.tokenId];
         tokenObj.isInTheBoard = true;
@@ -179,7 +179,7 @@ public class Board
             int i = 0;
         }
 
-        Debug.Log("Board:=> board size is ");
+        Debug2.Log("Board:=> board size is ");
         List<Move> totalMoves = new List<Move>();
 
         // this array cotains openning moves and avoids two openning moves with same insect type
@@ -233,7 +233,7 @@ public class Board
             
             if(!isOpenningMove )
             {
-                Debug.Log("Board:=> token-id, isMovable:=> " + token.tokenId + "  " + isMovable);
+                Debug2.Log("Board:=> token-id, isMovable:=> " + token.tokenId + "  " + isMovable);
             }
 
             // token is not movable

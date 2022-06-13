@@ -64,7 +64,7 @@ public class GameManager : MonoBehaviour, IMoveDisplayer
 
     private void UpdateHintText()
     {
-        Debug.Log("UpdateHintText called");
+        Debug2.Log("UpdateHintText called");
         if(gameState.currentUserTurnId == 0)
         {
             hintText.text = "Black player turn";
@@ -101,7 +101,7 @@ public class GameManager : MonoBehaviour, IMoveDisplayer
     public void OnMouseDown()
     {
 
-        Debug.Log("OnMouseDown called");
+        Debug2.Log("OnMouseDown called");
         if(!isDebug)
         {
             return;
@@ -171,7 +171,7 @@ public class GameManager : MonoBehaviour, IMoveDisplayer
         Vector3Int tilemapPosition = tilemap.WorldToCell(currentPosition);
 
         Vector3Int initalPositionOnTilemap = tilemap.WorldToCell(initialPosition);
-        Debug.Log("line 165");
+        Debug2.Log("line 165");
         if (moveManager.isValidPosition(type, userId, tilemapPosition, !isAttachedToBoard, tokenId, initalPositionOnTilemap))
         {
             Vector3 temp = tilemap.CellToWorld(tilemapPosition);
@@ -179,14 +179,14 @@ public class GameManager : MonoBehaviour, IMoveDisplayer
 
             if (userId == 0)
             {
-                Debug.Log("User turn changed to white");
+                Debug2.Log("User turn changed to white");
                 gameState.currentUserTurnId = 1;
                 gameState.leftTurnsToEnterUsers1Queen -= 1;
 
             } else
             {
 
-                Debug.Log("User turn changed to black");
+                Debug2.Log("User turn changed to black");
                 gameState.currentUserTurnId = 0;
                 gameState.leftTurnsToEnterUsers2Queen -= 1;
             }
@@ -196,13 +196,13 @@ public class GameManager : MonoBehaviour, IMoveDisplayer
 
                 if (userId == 0)
                 {
-                    Debug.Log("game state black queen entered ");
+                    Debug2.Log("game state black queen entered ");
                     gameState.isUser1QueenEntered = true;
                 }
                 else
                 {
 
-                    Debug.Log("game state white queen entered ");
+                    Debug2.Log("game state white queen entered ");
                     gameState.isUser2QueenEntered = true;
                 }
 
@@ -265,9 +265,9 @@ public class GameManager : MonoBehaviour, IMoveDisplayer
 
         if(gameState.isUser1QueenEntered)
         {
-            Debug.Log("AAAAA");
+            Debug2.Log("AAAAA");
         }
-        Debug.Log("Entered game state q1 " + gameState.isUser1QueenEntered + "    q2 " + gameState.isUser2QueenEntered);
+        Debug2.Log("Entered game state q1 " + gameState.isUser1QueenEntered + "    q2 " + gameState.isUser2QueenEntered);
         Token[] tokens = new Token[22];
 
         var clonedStorage = tilemapStorage.Clone();
@@ -285,7 +285,7 @@ public class GameManager : MonoBehaviour, IMoveDisplayer
         {
             if(i != tokens[i].tokenId)
             {
-                Debug.Log("########## confilict " + i + "   " + tokens[i].type);
+                Debug2.Log("########## confilict " + i + "   " + tokens[i].type);
             }
         }
 
@@ -293,7 +293,7 @@ public class GameManager : MonoBehaviour, IMoveDisplayer
 
         Move mv = agent.getRandomMove();
 
-        Debug.Log("Agent move is null ?:: " + (mv == null));
+        Debug2.Log("Agent move is null ?:: " + (mv == null));
         
         movePanel.DisplayMoves(agent.getCurrentMoves());
 
@@ -301,7 +301,7 @@ public class GameManager : MonoBehaviour, IMoveDisplayer
             var (descTos, isValid) = GetAcurratePositionOnTilemap(mv.token.type, mv.token.userId, tilemap.CellToWorld(mv.from), tilemap.CellToWorld(mv.to), !mv.isOpenningMove, mv.token.tokenId, true);
             if(!isValid)
             {
-                Debug.Log("GameManager:=> move is not valid for AI");
+                Debug2.Log("GameManager:=> move is not valid for AI");
             }
             pieces[mv.token.tokenId].GetComponent<Piece>().updateState(descTos, isValid);
         }));
@@ -326,7 +326,7 @@ public class GameManager : MonoBehaviour, IMoveDisplayer
             return;
         }   
 
-        Debug.Log(layoutBounds.xMax + " - " + layoutBounds.xMin);
+        Debug2.Log(layoutBounds.xMax + " - " + layoutBounds.xMin);
 
         for (int i = -10; i <= 10; i++)
         {
