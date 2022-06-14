@@ -286,13 +286,6 @@ public class GameManager : MonoBehaviour, IMoveDisplayer
 
         Board gameBoard = new Board(tokens ,gameState, clonedMoveManager, clonedStorage);
         
-        //for(int i = 0; i < 22; i++)
-       // {
-         //   if(i != tokens[i].tokenId)
-           // {
-             //   Debug2.Log("########## confilict " + i + "   " + tokens[i].type);
-            //}
-       // }
 
         Agent agent = new Agent(clonedMoveManager, clonedStorage, gameBoard);
 
@@ -306,7 +299,7 @@ public class GameManager : MonoBehaviour, IMoveDisplayer
             var (descTos, isValid) = GetAcurratePositionOnTilemap(mv.token.type, mv.token.userId, tilemap.CellToWorld(mv.from), tilemap.CellToWorld(mv.to), !mv.isOpenningMove, mv.token.tokenId, true);
             if(!isValid)
             {
-                Debug2.Log("GameManager:=> move is not valid for AI");
+                Debug.Log("GameManager:=> move is not valid for AI");
             }
             pieces[mv.token.tokenId].GetComponent<Piece>().updateState(descTos, isValid);
         }));

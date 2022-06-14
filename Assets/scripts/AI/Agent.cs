@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System;
-using Unity;
 using UnityEngine;
 public class Agent
 {
@@ -43,100 +41,73 @@ public class Agent
     public Move findBestMove()
     {
 
-        var (move, moveValue) = minimax(gameBoard, 2, true);
+        var (move, moveValue) = minimax(gameBoard, 4, true, int.MinValue, int.MaxValue);
         return move;
     }
 
-    public (Move, int) minimax(Board board, int depth, bool isMaximizingPlayer)
+    public (Move, int) minimax(Board board, int depth, bool isMaximizingPlayer, int alpha, int beta)
     {
+
+        
+        if(depth == 0)
+        {
+
+            Evaluator eval1 = Evaluator.GetInstance();
+            eval1.UpdateState(gameBoard.GetTilemapStorage(), gameBoard.getGameState());
+            int evalulatedStateValue = eval1.evaluateState();
+
+            return (null, evalulatedStateValue);
+        }
+
 
         var posibleMoves = board.getPossibleMoves(isMaximizingPlayer ? 1 : 0);
 
         Move bestMove = null;
-        int bestMoveValue = isMaximizingPlayer ? int.MinValue : int.MaxValue;
 
-        if(depth == 0)
-        {
-            for (int i = 0; i < posibleMoves.Count; i++)
-            {
-                Move move = posibleMoves[i];
-                
-                if (i == 0)
-                {
-                    bestMove = move;
-                    gameBoard.AddMove(move);
-
-
-                    Evaluator eval1 = new Evaluator(gameBoard.GetTilemapStorage(), gameBoard.getGameState());
-                    int evalulatedStateValue = eval1.evaluateState();
-                    bestMoveValue = evalulatedStateValue;
-                    gameBoard.RemoveMove(move);
-
-                    continue;
-                }
-
-                gameBoard.AddMove(move);
-                Evaluator eval = new Evaluator(gameBoard.GetTilemapStorage(), gameBoard.getGameState());
-                int evaluateStateValue = eval.evaluateState();
-                gameBoard.RemoveMove(move);
-
-     
-                if (isMaximizingPlayer)
-                {
-                    if (bestMoveValue < evaluateStateValue)
-                    {
-                        bestMove = move;
-                        bestMoveValue = evaluateStateValue;
-                    }
-                    continue;
-                }
-
-                if (bestMoveValue > evaluateStateValue)
-                {
-                    bestMove = move;
-                    bestMoveValue = evaluateStateValue;
-                }
-
-            }
-
-            return (bestMove, bestMoveValue);
-        }
-
-
-
-        for(int i = 0; i < posibleMoves.Count; i++)
+        for (int i = 0; i < posibleMoves.Count; i++)
         {
 
             Move move = posibleMoves[i];
 
             board.AddMove(move);
 
-            
-            var (bestMoveMinimax, bestMoveValueMinimax) = minimax(board, depth - 1, !isMaximizingPlayer);
+            var (_, rating) = minimax(board, depth - 1, !isMaximizingPlayer, alpha, beta);
 
             board.RemoveMove(move);
 
             if (isMaximizingPlayer)
             {
 
-                if(bestMoveValueMinimax > bestMoveValue)
+                if(rating > alpha)
                 {
-                    bestMoveValue = bestMoveValueMinimax;
+                    alpha = rating;
                     bestMove = move;
                 }
 
+                if(alpha >= beta)
+                {
+                    return (bestMove, alpha);
+                }
+
+
             } else
             {
-                if (bestMoveValueMinimax < bestMoveValue)
+                // minimizer player
+                if (rating <= beta)
                 {
-                    bestMoveValue = bestMoveValueMinimax;
+                    beta = rating;
                     bestMove = move;
+                }
+
+                if (alpha >= beta)
+                {
+                    return (bestMove, beta);
                 }
             }
 
         }
 
-        return (bestMove, bestMoveValue);
+        return (bestMove, isMaximizingPlayer? alpha: beta);
     }
 
     private void printGameState()

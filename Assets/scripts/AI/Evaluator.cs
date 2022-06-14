@@ -6,11 +6,30 @@ public class Evaluator
 {
     private TilemapStorage storage;
     private GameState gameState;
-    public Evaluator(TilemapStorage storage, GameState gameState)
+    public Evaluator()
+    {
+      
+    }
+
+    
+    public void UpdateState(TilemapStorage storage, GameState gameState)
     {
         this.storage = storage;
         this.gameState = gameState;
     }
+
+    private static Evaluator instance;
+
+    public static Evaluator GetInstance()
+    {
+        if(instance == null)
+        {
+            instance = new Evaluator();
+        }
+
+        return instance;
+    }
+
 
     public int evaluateState()
     {
