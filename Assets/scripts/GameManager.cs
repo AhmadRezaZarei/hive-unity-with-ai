@@ -5,6 +5,8 @@ using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using System;
+using UnityToolbag;
+
 public class GameManager : MonoBehaviour, IMoveDisplayer
 {
 
@@ -250,7 +252,10 @@ public class GameManager : MonoBehaviour, IMoveDisplayer
 
             if (!isAgentMove)
             {
-                handleAgent();
+                //Dispatcher.Invoke(() =>
+                //{
+                    handleAgent();
+                //});
             }
 
             return (temp, true);
@@ -281,19 +286,19 @@ public class GameManager : MonoBehaviour, IMoveDisplayer
 
         Board gameBoard = new Board(tokens ,gameState, clonedMoveManager, clonedStorage);
         
-        for(int i = 0; i < 22; i++)
-        {
-            if(i != tokens[i].tokenId)
-            {
-                Debug2.Log("########## confilict " + i + "   " + tokens[i].type);
-            }
-        }
+        //for(int i = 0; i < 22; i++)
+       // {
+         //   if(i != tokens[i].tokenId)
+           // {
+             //   Debug2.Log("########## confilict " + i + "   " + tokens[i].type);
+            //}
+       // }
 
         Agent agent = new Agent(clonedMoveManager, clonedStorage, gameBoard);
 
-        Move mv = agent.getRandomMove();
+        Move mv = agent.getBestMove();
 
-        Debug2.Log("Agent move is null ?:: " + (mv == null));
+        Debug.Log("Agent move is null ?:: " + (mv == null));
         
         movePanel.DisplayMoves(agent.getCurrentMoves());
 

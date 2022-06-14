@@ -166,7 +166,25 @@ public class MoveManager
 
         if (isBeetle)
         {
+            // todo check here 
+
             List<TileInfo> pices = tilemapStorage.GetPieces(initialPosition);
+
+            // preve code 
+            // if (pices.Count > 1 && pices[pices.Count - 1].tokenId == tokenId)
+            //{
+            //  return true;
+            //}
+            //
+            //
+
+            if(pices == null)
+            {
+                // log the state of tilestorage 
+                // bug => initialPosition is null for beetle
+                Debug.Log("MoveManager ");
+
+            }
 
             if (pices.Count > 1 && pices[pices.Count - 1].tokenId == tokenId)
             {
@@ -384,7 +402,7 @@ public class MoveManager
 
         if (!isMovable(initialPosition, type == InsectType.Beetle, tokenId) && !isOpenningMove)
         {
-            isMovable(initialPosition, type == InsectType.Beetle, tokenId);
+            //isMovable(initialPosition, type == InsectType.Beetle, tokenId);
             return false;
         }
 

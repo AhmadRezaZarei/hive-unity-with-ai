@@ -25,9 +25,8 @@ public class Agent
     }
     public Move getRandomMove()
     {
-
-        return findBestMove();
         printGameState();
+
         currentMoves = gameBoard.getPossibleMoves(1);
         Debug.Log("posible moves: " + currentMoves.Count);
         System.Random ran = new System.Random();
@@ -35,15 +34,14 @@ public class Agent
         return currentMoves[num];
     }
 
+    public Move getBestMove()
+    {
+        return findBestMove();
+    }
+
     public int total = 0;
     public Move findBestMove()
     {
-
-        if(gameBoard.getGameState().isUser1QueenEntered)
-        {
-            Debug.Log("total is 24");
-            total = 24;
-        }
 
         var (move, moveValue) = minimax(gameBoard, 2, true);
         return move;
@@ -51,13 +49,6 @@ public class Agent
 
     public (Move, int) minimax(Board board, int depth, bool isMaximizingPlayer)
     {
-
-        if(depth == 2 && board.getGameState().isUser1QueenEntered)
-        {
-            Debug.Log("Agent Line 41 called");
-            var aa = 0;
-           // Debug.Log("queen token status " + gameBoard.)
-        }
 
         var posibleMoves = board.getPossibleMoves(isMaximizingPlayer ? 1 : 0);
 
@@ -81,11 +72,6 @@ public class Agent
                     bestMoveValue = evalulatedStateValue;
                     gameBoard.RemoveMove(move);
 
-                    if(total == 24 && !gameBoard.getGameState().isUser1QueenEntered)
-                    {
-                        int p = 0;
-                    }
-
                     continue;
                 }
 
@@ -94,10 +80,7 @@ public class Agent
                 int evaluateStateValue = eval.evaluateState();
                 gameBoard.RemoveMove(move);
 
-                if (total == 24 && !gameBoard.getGameState().isUser1QueenEntered)
-                {
-                    int p = 0;
-                }
+     
                 if (isMaximizingPlayer)
                 {
                     if (bestMoveValue < evaluateStateValue)
@@ -108,7 +91,6 @@ public class Agent
                     continue;
                 }
 
-                // is not maximaizing player
                 if (bestMoveValue > evaluateStateValue)
                 {
                     bestMove = move;
@@ -134,10 +116,6 @@ public class Agent
 
             board.RemoveMove(move);
 
-            if (total == 24 && !gameBoard.getGameState().isUser1QueenEntered)
-            {
-                int p = 0;
-            }
             if (isMaximizingPlayer)
             {
 
