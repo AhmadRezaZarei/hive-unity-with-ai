@@ -63,6 +63,22 @@ public class Agent
 
         }
 
+        var (isQueenInTheBoard, queenPos) = storage.GetQueenPosition(move.token.userId);
+
+        if (!isQueenInTheBoard)
+        {
+            return true;
+        }
+
+        var neighbors = TilemapUtility.FindRing(queenPos, 1);
+
+        foreach (Vector3Int v in neighbors)
+        {
+            if (v == move.to)
+            {
+                return false;
+            }
+        }
 
 
 

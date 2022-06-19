@@ -6,6 +6,34 @@ using UnityEngine.Tilemaps;
 public class TilemapStorage
 {
     
+     private bool isQueen1Entered = false;
+    private Vector3Int queen1Position;
+
+    private bool isQueen2Entered = false;
+    private Vector3Int queen2Position;
+
+
+    public (bool ,Vector3Int) GetQueenPosition(int userdId)
+    {
+        if((userdId == 0 && !isQueen1Entered) || ((userdId == 1) && !isQueen2Entered))
+        {
+            return (false, Vector3Int.zero);
+        }
+
+        if(userdId == 0)
+        {
+            return (true, queen1Position);
+        }
+
+        if(userdId == 1)
+        {
+            return (true, queen2Position);
+        }
+
+
+        // imposible
+        return (false, Vector3Int.zero);
+    }
 
     public TilemapStorage Clone()
     {
@@ -67,6 +95,21 @@ public class TilemapStorage
     public void Insert(Vector3Int pos, TileInfo data)
     {
 
+
+        if(data.type == InsectType.Queen)
+        {
+            if(data.userId == 0)
+            {
+                isQueen1Entered = true;
+                queen1Position = pos;
+            } else
+            {
+                isQueen2Entered = true;
+                queen2Position = pos;
+            }
+        }
+
+
         if(tiles.ContainsKey(pos.GetUniqueKey()))
         {
             var temp = tiles[pos.GetUniqueKey()];
@@ -99,13 +142,38 @@ public class TilemapStorage
     public bool Remove(Vector3Int pos, int tokenId)
     {
 
+
+
+
         if(!tiles.ContainsKey(pos.GetUniqueKey()))
         {
             Debug2.Log("TileStorage do not found tile");
             return true;
         }
 
+
+
         var list = tiles[pos.GetUniqueKey()];
+        
+        var piece = list[list.Count - 1];
+
+        if(piece.type == InsectType.Queen)
+        {
+
+            if(piece.userId == 1)
+            {
+                isQueen2Entered = false;
+                queen2Position = Vector3Int.zero;
+            }
+
+            if(piece.userId == 0)
+            {
+                isQueen1Entered = false;
+                queen1Position = Vector3Int.zero;
+            }
+
+        }
+
 
         if(list.Count == 1)
         {
@@ -121,6 +189,8 @@ public class TilemapStorage
             Debug2.Log("TileStorage remove tile size: " + tiles.Count);
             return true;
         }
+
+
 
         Debug2.Log("TileStorage remove tile size: " + tiles.Count);
 
