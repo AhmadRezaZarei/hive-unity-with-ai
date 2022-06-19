@@ -45,6 +45,30 @@ public class Agent
         return move;
     }
 
+
+    public bool IsGoodMove(Move move)
+    {
+        var tokenType = move.token.type;
+
+        if(tokenType == InsectType.Beetle)
+        {
+            // check the beetle is going to our token
+
+            var pieces = storage.GetPieces(move.to);
+
+            if(pieces[pieces.Count -1].userId == move.token.userId)
+            {
+                return false;
+            }
+
+        }
+
+
+
+
+        return true;
+    }
+
     public (Move, int) minimax(Board board, int depth, bool isMaximizingPlayer, int alpha, int beta)
     {
 
@@ -74,6 +98,14 @@ public class Agent
             var (_, rating) = minimax(board, depth - 1, !isMaximizingPlayer, alpha, beta);
 
             board.RemoveMove(move);
+
+            // check is a good move or not 
+
+            if(!IsGoodMove(move))
+            {
+                continue;
+            }
+
 
             if (isMaximizingPlayer)
             {
