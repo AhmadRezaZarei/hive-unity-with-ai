@@ -54,7 +54,7 @@ public class Agent
 
             Evaluator eval1 = Evaluator.GetInstance();
             eval1.UpdateState(gameBoard.GetTilemapStorage(), gameBoard.getGameState());
-            int evalulatedStateValue = eval1.evaluateState();
+            int evalulatedStateValue = eval1.EvaluateState();
 
             return (null, evalulatedStateValue);
         }

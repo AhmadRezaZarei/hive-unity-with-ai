@@ -229,15 +229,9 @@ public class Board
 
             }
 
-            bool isMovable = false;
-
-            if(!isOpenningMove)
-            {
-                isMovable = moveManager.isMovable(token.GetPositionInTilemap(), token.type == InsectType.Beetle, token.tokenId);
-            } else
-            {
-                isMovable = true;
-            }
+            
+            bool isMovable = moveManager.isMovable(token.GetPositionInTilemap(), token.type == InsectType.Beetle, token.tokenId, isOpenningMove);
+            
 
             
             if(!isOpenningMove )

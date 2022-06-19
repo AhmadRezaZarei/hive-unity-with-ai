@@ -152,8 +152,15 @@ public class MoveManager
         return list;
     }
 
-    public bool isMovable(Vector3Int initialPosition, bool isBeetle, int tokenId)
+    public bool isMovable(Vector3Int initialPosition, bool isBeetle, int tokenId,bool isOpenningMove)
     {
+
+
+        if(isOpenningMove)
+        {
+            return true;
+        }
+
         HashSet<int> visited = new HashSet<int>();
 
         List<Vector3Int> neighbors = tilemapStorage.GetSurroundingNoneEmptyTiles(initialPosition, 1);
@@ -400,7 +407,7 @@ public class MoveManager
 
         Debug2.Log("MoveManager:=> line 387");
 
-        if (!isMovable(initialPosition, type == InsectType.Beetle, tokenId) && !isOpenningMove)
+        if (!isMovable(initialPosition, type == InsectType.Beetle, tokenId, isOpenningMove) && !isOpenningMove)
         {
             //isMovable(initialPosition, type == InsectType.Beetle, tokenId);
             return false;
